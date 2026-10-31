@@ -1,5 +1,9 @@
 // Santa's Magic Footprints — site behavior
 
+// Ordering is on hold for the 2026 season. Flip to false to resume checkout
+// once Stripe is wired up and ready to reopen.
+const ORDERING_PAUSED = true;
+
 // TODO: Replace each placeholder below with the real Stripe Payment Link
 // for that product (Stripe Dashboard -> Payment Links). Each link already
 // supports a quantity adjuster on Stripe's hosted checkout page, so no
@@ -68,6 +72,21 @@ function initGallery() {
 function initAddToCart() {
   const button = document.querySelector(".add-to-cart");
   if (!button) return;
+
+  if (ORDERING_PAUSED) {
+    const qtyInput = document.querySelector(".qty-input");
+    button.textContent = "Ordering Paused";
+    button.disabled = true;
+    if (qtyInput) qtyInput.disabled = true;
+
+    const note = document.createElement("p");
+    note.className = "order-paused-note";
+    note.textContent =
+      "Ordering for 2026 has been put on hold — we'll be back in the New Year!";
+    button.closest(".buy-box")?.insertAdjacentElement("afterend", note);
+    return;
+  }
+
   const product = button.dataset.product;
   button.addEventListener("click", () => {
     const link = STRIPE_PAYMENT_LINKS[product];
@@ -87,14 +106,45 @@ function initContactForm() {
   const form = document.querySelector(".contact-form");
   if (!form) return;
   const status = form.querySelector(".form-status");
-  form.addEventListener("submit", (e) => {
+  const submitBtn = form.querySelector("button[type=submit]");
+
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    // TODO: wire this up to a real form endpoint (e.g. Formspree, Netlify
-    // Forms, or a small serverless function) — there is no backend behind
-    // this form yet.
-    if (status) {
-      status.textContent =
-        "Thanks! (Form submission isn't connected to a backend yet — see js/main.js.)";
+
+    const accessKey = form.querySelector('[name="access_key"]')?.value;
+    if (!accessKey || accessKey === "YOUR_ACCESS_KEY_HERE") {
+      if (status) {
+        status.textContent =
+          "This form isn't connected yet — add your Web3Forms access key in contact.html.";
+      }
+      return;
+    }
+
+    if (submitBtn) submitBtn.disabled = true;
+    if (status) status.textContent = "Sending...";
+
+    try {
+      const response = await fetch(form.action, {
+        method: "POST",
+        headers: { Accept: "application/json" },
+        body: new FormData(form),
+      });
+      const result = await response.json();
+
+      if (response.ok && result.success) {
+        if (status) status.textContent = "Thanks! Your message has been sent.";
+        form.reset();
+      } else {
+        if (status)
+          status.textContent =
+            "Something went wrong sending that — please try again or call us instead.";
+      }
+    } catch (err) {
+      if (status)
+        status.textContent =
+          "Something went wrong sending that — please try again or call us instead.";
+    } finally {
+      if (submitBtn) submitBtn.disabled = false;
     }
   });
 }

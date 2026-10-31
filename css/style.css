@@ -125,6 +125,24 @@ h2 {
   background: linear-gradient(90deg, var(--color-gold), transparent);
 }
 
+/* ---------- Order-pause announcement banner ---------- */
+.order-pause-banner {
+  background: linear-gradient(90deg, var(--color-gold), var(--color-gold-light), var(--color-gold));
+  color: #3a2a02;
+  text-align: center;
+  font-family: var(--font-heading);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  font-size: .78em;
+  font-weight: 600;
+  padding: 12px 24px;
+}
+.order-pause-banner strong { font-weight: 700; }
+
+@media (max-width: 480px) {
+  .order-pause-banner { font-size: .68em; letter-spacing: 1px; }
+}
+
 /* ---------- Header / Nav ---------- */
 .site-header {
   display: flex;
@@ -539,6 +557,7 @@ h2 {
   transition: border-color .25s;
 }
 .qty-input:focus { outline: none; border-color: var(--color-gold); }
+.qty-input:disabled { opacity: .45; cursor: not-allowed; }
 
 .add-to-cart, .contact-form button {
   position: relative;
@@ -572,6 +591,22 @@ h2 {
 .add-to-cart:hover, .contact-form button:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
+}
+
+.add-to-cart:disabled {
+  background: rgba(255,255,255,.1);
+  color: var(--color-text-muted);
+  cursor: not-allowed;
+  box-shadow: none;
+}
+.add-to-cart:disabled:hover { transform: none; box-shadow: none; }
+.add-to-cart:disabled::after { display: none; }
+
+.order-paused-note {
+  margin-top: 14px;
+  font-size: .85em;
+  color: var(--color-gold-light);
+  font-style: italic;
 }
 
 .share-link {
