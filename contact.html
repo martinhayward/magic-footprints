@@ -41,7 +41,12 @@
 <div class="text-page">
   <p>Much like Santa, writing to us via the form below is by far the fastest means of communication. You can also call our telephone number: 301-972-5555 (Please leave a message and we will call back in one business day)</p>
 
-  <form class="contact-form">
+  <form class="contact-form" action="https://api.web3forms.com/submit" method="POST">
+    <input type="hidden" name="access_key" value="9f9f8dcb-aafc-4505-9a1d-0b3b04513e31">
+    <input type="hidden" name="subject" value="New message from the Santa's Magic Footprints website">
+    <input type="hidden" name="redirect" value="https://magicfootprints.com/contact.html?sent=true">
+    <input type="checkbox" name="botcheck" style="display:none" tabindex="-1" autocomplete="off">
+
     <div>
       <label for="first-name">First Name</label>
       <input id="first-name" name="first-name" type="text" required>
